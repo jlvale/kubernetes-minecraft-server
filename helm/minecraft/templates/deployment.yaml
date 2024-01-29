@@ -4,6 +4,9 @@ kind: Deployment
 metadata:
   name: minecraft-server
   labels:
+    tags.datadoghq.com/env: prod
+    tags.datadoghq.com/service: minecraft-prod-server-B
+    tags.datadoghq.com/version: "1.0"
     app: minecraft-server
 spec:
   replicas: 1
@@ -13,7 +16,13 @@ spec:
   template:
     metadata:
       labels:
+        tags.datadoghq.com/env: prod
+        tags.datadoghq.com/service: minecraft-prod-server-B
+        tags.datadoghq.com/version: "1.0"
+        admission.datadoghq.com/enabled: "true"
         app: minecraft-server
+      annotations:
+        admission.datadoghq.com/java-lib.version: v1.28.0
     spec:
       volumes:
       - name: minecraft-data
@@ -23,11 +32,21 @@ spec:
       - name: minecraft-server
         image: itzg/minecraft-server:latest
         resources:
-          limits:
-            memory: {{ .Values.resources.limits.memory }}
-          requests:
-            memory: {{ .Values.resources.requests.memory }}
+          limits:                                           
+            cpu: "6"                                        
+            memory: 3Gi                                     
+          requests:                                         
+            cpu: "1"                                        
+            memory: 2Gi
         env:
+          - name: DD_PROFILING_ENABLED
+            value: "true"
+          - name: DD_LOGS_INJECTION
+            value: "true"
+          - name: DD_APPSEC_ENABLED
+            value: "true"
+          - name: DD_IAST_ENABLED
+            value: "true"
           - name:  EULA
             value: 'TRUE'
           - name: MODE
@@ -36,9 +55,56 @@ spec:
             value: {{ .Values.minecraft.motd }}
           - name: ALLOW_FLIGHT
             value: 'TRUE'
+          - name: DIFFICULTY                                  
+            value: easy                                       
+          - name: MAX_PLAYERS                                 
+            value: "20"                                       
+          - name: MAX_WORLD_SIZE                              
+            value: "10000"                                    
+          - name: FORCE_GAMEMODE                              
+            value: "true"                                     
+          - name: MAX_BUILD_HEIGHT                            
+            value: "256" 
+          - name: MAX_TICK_TIME                                                             
+            value: "60000"                                    
+          - name: SPAWN_PROTECTION                            
+            value: "16"                                       
+          - name: VIEW_DISTANCE                               
+            value: "10"                                       
+          - name: MODE                                        
+            value: creative                                          
+          - name: PVP                                         
+            value: "false"                                    
+          - name: LEVEL_TYPE                                  
+            value: DEFAULT                                    
+          - name: LEVEL                                       
+            value: world
+          - name: MODRINTH_ALLOWED_VERSION_TYPE               
+            value: release                                    
+          - name: MEMORY                                      
+            value: 2g                                         
+          - name: OVERRIDE_SERVER_PROPERTIES                  
+            value: "false"                                    
+          - name: ENABLE_RCON                                 
+            value: "true"                                     
+          - name: RCON_PASSWORD                               
+            valueFrom:                                        
+              secretKeyRef:                                   
+                key: rcon-password                            
+                name: minecraft-prod-minecraft-rcon           
+          - name: ENABLE_ROLLING_LOGS                         
+            value: "true" 
+          - name: FORCE_WORLD_COPY                                                          
+            value: "false"                                    
+          - name: OVERRIDE_SERVER_PROPERTIES                  
+            value: "true"
         ports:
         - containerPort: {{ .Values.minecraft.port }}
           name: minecraft
+          protocol: TCP
+        - containerPort: 25575                              
+          name: rcon                                        
+          protocol: TCP  
         volumeMounts:
           - name: minecraft-data
             mountPath:  /data
@@ -58,3 +124,14 @@ spec:
             - ping
           initialDelaySeconds: 30
           periodSeconds: 30
+        securityContext:                                    
+          allowPrivilegeEscalation: false                   
+          capabilities:                                     
+            drop:                                           
+            - ALL                                           
+          readOnlyRootFilesystem: true                      
+        stdin: true                                         
+        terminationMessagePath: /dev/termination-log        
+        terminationMessagePolicy: File                      
+        tty: true
+        dnsPolicy: ClusterFirst                              
