@@ -10,7 +10,7 @@ node:
 minecraft:
   gamemode: 'survival'
   motd: 'Ola Datadog woof woof' # Message of the Day
-  port: 30101
+  port: 30112
 
 volume:
   storage: 3Gi
