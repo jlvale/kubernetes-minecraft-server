@@ -97,31 +97,4 @@ spec:
           protocol: TCP  
         volumeMounts:
           - name: minecraft-data
-            mountPath:  /data
-        readinessProbe:
-          exec:
-            command:
-            - mcstatus
-            - 127.0.0.1
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        livenessProbe:
-          exec:
-            command:
-            - mcstatus
-            - 127.0.0.1
-            - ping
-          initialDelaySeconds: 30
-          periodSeconds: 30
-        securityContext:                                    
-          allowPrivilegeEscalation: false                   
-          capabilities:                                     
-            drop:                                           
-            - ALL                                           
-          readOnlyRootFilesystem: true                      
-        stdin: true                                         
-        terminationMessagePath: /dev/termination-log        
-        terminationMessagePolicy: File                      
-        tty: true
-        dnsPolicy: ClusterFirst                              
+            mountPath:  /data                            
