@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: minecraft-prod-server-B
+  name: minecraft-prod-server-b
   namespace: minecraft
   labels:
     app: minecraft-server

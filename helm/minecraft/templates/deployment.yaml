@@ -5,7 +5,7 @@ metadata:
   name: minecraft-server
   labels:
     tags.datadoghq.com/env: prod
-    tags.datadoghq.com/service: minecraft-prod-server-B
+    tags.datadoghq.com/service: minecraft-prod-server-b
     tags.datadoghq.com/version: "1.0"
     app: minecraft-server
 spec:
@@ -17,7 +17,7 @@ spec:
     metadata:
       labels:
         tags.datadoghq.com/env: prod
-        tags.datadoghq.com/service: minecraft-prod-server-B
+        tags.datadoghq.com/service: minecraft-prod-server-b
         tags.datadoghq.com/version: "1.0"
         admission.datadoghq.com/enabled: "true"
         app: minecraft-server
